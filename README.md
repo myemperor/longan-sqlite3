@@ -11,7 +11,7 @@
 > * Update
 > * Delete
 
-![longan-sqlite3-logo](http://www.3visual3.com/uploads/allimg/140419/1-140419121231.jpg)
+![longan-sqlite3-logo](https://img-blog.csdn.net/20180329103235613)
 
 
 
