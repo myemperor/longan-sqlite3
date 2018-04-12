@@ -1,5 +1,6 @@
 from .handler import DBHandler
-from .flesh import Flesh
+from .config import *
+from .util import *
 
 
 class Longan:
@@ -11,28 +12,15 @@ class Longan:
               md.delete(field_obj)
     """
 
-    '''
-    此表是为了对where语句进行匹配
-    如：md.where(age_gt=5) = "WHERE age > 5"
-    '''
-    opt_map = {
-        'gt': '>',
-        'lt': '<',
-        'eq': '=',
-        'neq': '!=',
-        'egt': '>=',
-        'elt': '<=',
-        'like': 'like',
-    }
-
     def __init__(self, db_path, table_name):
         """
         仅提供初始化，处理表 的操作
         :param table_name: 待处理的表
         """
         self._table_name = table_name
-        self._condition = None
         self._db_path = db_path
+        self._condition = None
+        self._key = None
         DBHandler.init(db_path)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -45,6 +33,7 @@ class Longan:
         :return: BaseModel
         """
         self._table_name = table_name
+        self._key = None
         return self
 
     def where(self, **kwargs):
@@ -59,7 +48,7 @@ class Longan:
         for k, v in kwargs.items():
             index = k.find('_')
             field = k[:index]
-            opt = Longan.opt_map[k[index + 1:]]
+            opt = opt_map[k[index + 1:]]
             if isinstance(v, str):
                 v = '"{}"'.format(v)
             condition.append("{} {} {}".format(field, opt, str(v)))
@@ -71,14 +60,14 @@ class Longan:
         查询语句
         :return: Filed
         """
-        sql = 'SELECT * FROM {}'
+        sql = SqlConfig.SELECT_ALL
         if self._condition:
-            sql = 'SELECT * FROM {} WHERE {}'
+            sql = SqlConfig.SELECT_CONDITION
         sql = sql.format(self._table_name, self._condition)
-        cursor = DBHandler.execute(sql)
-        self._condition = None
-        field_arr = [field[0] for field in cursor.description]
-        return Longan.convert_dicts(field_arr, cursor.fetchall())
+        ret = DBHandler.execute(sql)
+        self.clear()
+        field_arr = [field[0] for field in DBHandler.desc()]
+        return convert_dicts(field_arr, ret)
 
     def insert_or_update(self, *field_obj):
         """
@@ -86,16 +75,19 @@ class Longan:
         :param field_obj: Filed
         :return:
         """
-        insert_sql_0 = "INSERT OR IGNORE INTO {} ({}) VALUES({})"
+        insert_sql_0 = SqlConfig.INSERT
         for obj in field_obj:
             insert_sql = insert_sql_0.format(self._table_name, obj.keys_str(), obj.values_str())
-            cursor = DBHandler.execute(insert_sql)
-            if cursor.rowcount == 0:
-                update_sql = "UPDATE {} SET {} WHERE id={}"
-                update_sql = update_sql.format(self._table_name, obj.join('='), obj.id)
+            DBHandler.execute(insert_sql)
+            key = self.primary_key()
+            if DBHandler.affect() == 0:
+                update_sql = SqlConfig.UPDATE
+                value = obj.join('=')
+                where = "{}={}".format(key, obj.get(key))
+                update_sql = update_sql.format(self._table_name, value, where)
                 DBHandler.execute(update_sql)
             else:
-                obj.id = cursor.lastrowid
+                obj.set(key, DBHandler.last_id(), force=False)
         DBHandler.commit()
 
     def delete(self, field_obj=None):
@@ -106,19 +98,49 @@ class Longan:
         :param field_obj: Filed
         :return: 0 or 1
         """
-        sql = "DELETE FROM {} WHERE {}"
+        sql = SqlConfig.DELETE
         if field_obj:
-            if not field_obj.id:
+            key = self.primary_key()
+            if not field_obj.get(key):
                 return 0
-            sql = sql.format(self._table_name, "id={}".format(field_obj.id))
+            where = "{}={}".format(key, field_obj.get(key))
+            sql = sql.format(self._table_name, where)
         else:
             if not self._condition:
                 return 0
             sql = sql.format(self._table_name, self._condition)
-        cursor = DBHandler.execute(sql)
-        self._condition = None
+        DBHandler.execute(sql)
+        self.clear()
         DBHandler.commit()
-        return cursor.rowcount
+        return DBHandler.affect()
+
+    def primary_key(self):
+        """
+        通过sql语句获取当前表的主键
+        :return:
+        """
+        if self._key:
+            return self._key
+        sql = SqlConfig.TABLE_INFO.format(self._table_name)
+        table_info = DBHandler.execute(sql)[0]
+        create_sql = table_info[4]
+        start = create_sql.find('(') + 1
+        end = create_sql.rfind(')')
+        column_list = create_sql[start:end].split(',')
+        for column in column_list:
+            column = column.strip()
+            if 'PRIMARY KEY' in column.upper():
+                if '(' in column:
+                    start = column.find('(') + 1
+                    end = column.rfind(')')
+                    key = column[start:end].strip()
+                else:
+                    key = column[:column.find(' ') + 1]
+                self._key = key.strip()
+                return self._key
+
+    def clear(self):
+        self._condition = None
 
     @staticmethod
     def close():
@@ -137,24 +159,8 @@ class Longan:
     def execute_file(sql_path):
         """
         直接执行sql语句，不推荐使用
-        :param sql:
+        :param sql_path:
         :return:
         """
         with open(sql_path) as f:
             return DBHandler.execute(f.read())
-
-    @staticmethod
-    def convert_dicts(fields, items):
-        """
-        :param fields:
-        :param items:
-        :return: list(Flesh)
-        :rtype: list
-        """
-        ret_items = []
-        for i in items:
-            item_dict = {}
-            for k, v in enumerate(fields):
-                item_dict[v] = i[k]
-            ret_items.append(Flesh(item_dict))
-        return ret_items

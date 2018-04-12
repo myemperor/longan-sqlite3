@@ -10,6 +10,13 @@ class Flesh:
         for k, v in _dict.items():
             self.__setattr__(k, v)
 
+    def get(self, name):
+        return self.__dict__[name]
+
+    def set(self, name, value, force=True):
+        if force or name not in self.__dict__:
+            self.__dict__[name] = value
+
     def __str__(self):
         return str(self.__dict__)
 

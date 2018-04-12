@@ -2,7 +2,6 @@ from longan_sqlite import Longan, Flesh
 
 longan = Longan('test.db', 'company')
 longan.execute_file('company.sql')
-
 # 批量插入或修改
 flesh_list = [
     Flesh(name='jobs', age=50, address='America', salary=90),
@@ -22,7 +21,7 @@ flesh.salary += 5
 longan.insert_or_update(flesh)
 
 # 查询
-ret = longan.where(age_gt=18, salary_elt=100, salary_gt=0).query()
+ret = longan.where(age_gt=5).query()
 
 for r in ret:
     print(r)
@@ -32,3 +31,5 @@ for r in ret:
 
 # 通过条件进行删除
 longan.where(id_gt=0).delete()
+
+longan.primary_key()
