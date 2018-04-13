@@ -12,15 +12,21 @@ opt_map = {
     'like': 'like',
 }
 
+aggr_opt_map = {
+    'sum': 'SUM',
+    'avg': 'AVG',
+    'max': 'MAX',
+    'min': 'MIN',
+    'count': 'COUNT',
+}
+
 
 class SqlConfig:
-    SELECT_ALL = 'SELECT * FROM {}'
-    SELECT_CONDITION = 'SELECT * FROM {} WHERE {}'
-
+    SELECT = 'SELECT * FROM {}'
     INSERT = "INSERT OR IGNORE INTO {} ({}) VALUES({})"
-
     UPDATE = "UPDATE {} SET {} WHERE {}"
-
     DELETE = "DELETE FROM {} WHERE {}"
-
     TABLE_INFO = "SELECT * FROM sqlite_master WHERE type='table' and name like '{}'"
+
+    WHERE = " WHERE {} "
+    GROUP_BY = " GROUP BY {} "

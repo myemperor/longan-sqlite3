@@ -19,8 +19,8 @@ class Longan:
         """
         self._table_name = table_name
         self._db_path = db_path
-        self._condition = None
         self._key = None
+        self.clear()
         DBHandler.init(db_path)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -34,6 +34,7 @@ class Longan:
         """
         self._table_name = table_name
         self._key = None
+        self.clear()
         return self
 
     def where(self, **kwargs):
@@ -58,12 +59,18 @@ class Longan:
     def query(self):
         """
         查询语句
+        新支持分组聚合
         :return: Filed
         """
-        sql = SqlConfig.SELECT_ALL
+        # 默认选择所有字段
+        sql = SqlConfig.SELECT
+        if self._aggregate:
+            sql = sql.replace('*', self._aggregate)
         if self._condition:
-            sql = SqlConfig.SELECT_CONDITION
-        sql = sql.format(self._table_name, self._condition)
+            sql += SqlConfig.WHERE
+        if self._group_field:
+            sql += SqlConfig.GROUP_BY
+        sql = sql.format(self._table_name, self._condition, self._group_field)
         ret = DBHandler.execute(sql)
         self.clear()
         field_arr = [field[0] for field in DBHandler.desc()]
@@ -139,8 +146,35 @@ class Longan:
                 self._key = key.strip()
                 return self._key
 
+    def group_by(self, field):
+        self._group_field = field
+        return self
+
+    def aggregate(self, **kwargs):
+        """
+        聚合函数
+        格式如下：   字段名_聚合函数名="别名"
+                    如果别名为空字符串，则默认别名为：字段名_聚合函数名
+        :param kwargs: age_max="maxAge"
+        :return:
+        """
+        aggr_list = []
+        for k, v in kwargs.items():
+            index = k.find('_')
+            field = k[:index]
+            aggr = k[index + 1:]
+            if aggr in aggr_opt_map:
+                v = v if v else k
+                sql = "{}({}) {}".format(aggr_opt_map[aggr], field, v)
+                aggr_list.append(sql)
+        self._aggregate = ','.join(aggr_list)
+        return self
+
     def clear(self):
         self._condition = None
+        self._group_field = None
+        self._group_opt = None
+        self._aggregate = None
 
     @staticmethod
     def close():

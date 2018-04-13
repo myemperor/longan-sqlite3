@@ -1,6 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.2
+# 欢迎使用longan-sqlite3 v0.3
 
 ------
 
@@ -17,8 +17,9 @@
 
 > 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
 
-> 0.2 修复了主键判断，修复了handler接口
+> 0.3 新增分组聚合函数
 
+> 0.2 修复了主键判断，修复了handler接口
 ------
 
 ## 什么是 longan

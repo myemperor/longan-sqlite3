@@ -4,7 +4,6 @@ class Flesh:
     """
 
     def __init__(self, _dict=None, **kwargs):
-        self.__setattr__('id', None)
         if not _dict:
             _dict = kwargs
         for k, v in _dict.items():
