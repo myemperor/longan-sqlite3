@@ -24,18 +24,18 @@
 
 ## 什么是 longan
 
-longan 是一种水果，就是他很甜，喜欢的人吃很多，不喜欢的人一吃就上火
+longan 是一种水果，很甜，喜欢的人吃很多，不喜欢的人一吃就上火！
 
 ### 1. 以下是我们计划中的功能 
 
 - [x] 支持 CRUD
 - [x] 支持 分组聚合函数
+- [x] 修复 API文档
 - [ ] 新增 where 语句支持
-- [ ] 修复 代码注释
 
 ### 2. 以下是我们的行为守恒公式
 
-$$longan=mc^2$$
+longan=mc^2
 
 ### 3. 使用方法
 
@@ -43,9 +43,27 @@ $$longan=mc^2$$
 ```python
 from longan_sqlite import Longan, Flesh
 ```
+ - 初始化longan
+```python
+Longan.init('test.db')
+```
  - 实例化longan
 ```python
-longan = Longan('test.db', 'company')
+longan = Longan('company')
+```
+ - 导入数据库（此处会在日后的版本中进行抽象）
+```python
+longan.execute_file('company.sql')
+```
+ - 其中的表结构 company.sql
+```sql
+CREATE TABLE IF NOT EXISTS COMPANY(
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
+   name           TEXT    NOT NULL,
+   age            INT     NOT NULL,
+   address        CHAR(50),
+   salary         REAL
+);
 ```
  - Create
 ```python
@@ -78,26 +96,27 @@ for r in ret:
 # 通过条件进行删除
 longan.where(id_gt=0).delete()
 ```
- - 其中的表结构 company.sql
-```sql
-CREATE TABLE IF NOT EXISTS COMPANY(
-   id INTEGER PRIMARY KEY AUTOINCREMENT,
-   name           TEXT    NOT NULL,
-   age            INT     NOT NULL,
-   address        CHAR(50),
-   salary         REAL
-);
-```
- - 通过如下方式创建
+ - 0.3新增分组聚合查询
 ```python
-longan.execute_file('company.sql')
+longan.aggregate(age_max="maxAge", salary_min="minSalary")
+longan.where(age_gt=5)
+longan.group_by('address')
+ret = longan.query()
+for r in ret:
+    print(r)
 ```
-
-
 ### 4. API文档
 
 | 接口        | 参数   |  说明  |
 | --------   | -----:  | :----:  |
-| -          | - |   -     |
+| select     | - |   未开放，当前版本默认为选择全部字段，除非使用聚合函数     |
+| from_table | table_name | 指定查询表 |
+| where | **field_condition | 借鉴了Django中查询的操作，"_"前为字段名，后为表达式，需要传递值 |
+| insert_or_update | *field_obj | 将一个或多个Flesh对象插入或更新到表中，会自动为对象添加主键 |
+| delete | *field_obj | 可以通过where方法来根据条件来进行删除，也可以对一个或多个Flesh对象直接删除，前提是对象拥有主键 |
+| group_by | field | 对指定字段进行分组 |
+| aggregate | **field_condition | 可以参考where语句：字段名_聚合函数名="别名" |
+| query | - | 查询，需要组合使用 |
+| primary_key | - | 主键 |
 
 </font>

@@ -11,17 +11,22 @@ class Longan:
     删除：     md.where(age_lt=50).delete()
               md.delete(field_obj)
     """
+    db_path = None
 
-    def __init__(self, db_path, table_name):
+    @staticmethod
+    def init(db_path):
+        Longan.db_path = db_path
+        DBHandler.init(db_path)
+
+    def __init__(self, table_name=None):
         """
         仅提供初始化，处理表 的操作
         :param table_name: 待处理的表
         """
-        self._table_name = table_name
-        self._db_path = db_path
-        self._key = None
-        self.clear()
-        DBHandler.init(db_path)
+        if not Longan.db_path:
+            raise RuntimeError("Please init db_path first!")
+        if table_name:
+            self.from_table(table_name)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         DBHandler.close()

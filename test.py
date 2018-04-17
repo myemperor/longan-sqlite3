@@ -1,6 +1,7 @@
 from longan_sqlite import Longan, Flesh
 
-longan = Longan('test.db', 'company')
+Longan.init('test.db')
+longan = Longan('company')
 longan.execute_file('company.sql')
 # 批量插入或修改
 flesh_list = [
@@ -35,7 +36,6 @@ ret = longan.query()
 for r in ret:
     print(r)
 # ret = longan.where(age_gt=5).query()
-
 
 
 # 通过条件进行删除
