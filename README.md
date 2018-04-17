@@ -1,6 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.3
+# 欢迎使用longan-sqlite3 v0.4
 
 ------
 
@@ -16,6 +16,8 @@
 
 
 > 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
+
+> 0.4 新增API文档
 
 > 0.3 新增分组聚合函数
 
@@ -108,7 +110,7 @@ for r in ret:
 ### 4. API文档
 
 | 接口        | 参数   |  说明  |
-| --------   | -----:  | :----:  |
+| :--------:   | :-----:  | :----  |
 | select     | - |   未开放，当前版本默认为选择全部字段，除非使用聚合函数     |
 | from_table | table_name | 指定查询表 |
 | where | **field_condition | 借鉴了Django中查询的操作，"_"前为字段名，后为表达式，需要传递值 |
