@@ -1,6 +1,6 @@
 from longan_sqlite import Longan, Flesh
 
-Longan.init('test.db')
+Longan.init('test.db', True)
 longan = Longan('company')
 longan.execute_file('company.sql')
 # 批量插入或修改
@@ -21,12 +21,18 @@ flesh.salary += 5
 longan.insert_or_update(flesh)
 
 # 查询
-ret = longan.where(age_gt=5).query()
+# 0.5 where子句 新增 between 和 in 的支持
+#              like可以忽略大小写
+ret = longan.ignore_case() \
+    .where(age_gt=5, name_like="%JOB%",
+           salary_between=[50, 100],
+           address_in=['America', 'china', '朝鲜']).query()
 for r in ret:
     print(r)
     if r.name == 'jobs':
+        pass
         # 通过对象进行删除
-        longan.delete(r)
+        # longan.delete(r)
 
 # 0.3新增分组聚合查询
 longan.aggregate(age_max="maxAge", salary_min="minSalary")

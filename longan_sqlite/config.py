@@ -9,7 +9,9 @@ opt_map = {
     'neq': '!=',
     'egt': '>=',
     'elt': '<=',
-    'like': 'like',
+    'like': 'LIKE',
+    'in': 'IN',
+    'between': 'BETWEEN',
 }
 
 aggr_opt_map = {

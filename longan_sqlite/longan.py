@@ -14,9 +14,9 @@ class Longan:
     db_path = None
 
     @staticmethod
-    def init(db_path):
+    def init(db_path, debug=False):
         Longan.db_path = db_path
-        DBHandler.init(db_path)
+        DBHandler.init(db_path, debug)
 
     def __init__(self, table_name=None):
         """
@@ -55,8 +55,11 @@ class Longan:
             index = k.find('_')
             field = k[:index]
             opt = opt_map[k[index + 1:]]
-            if isinstance(v, str):
-                v = '"{}"'.format(v)
+            v = add_quotes(v)
+            if opt == 'IN':
+                v = "({})".format(", ".join([add_quotes(x) for x in v]))
+            if opt == 'BETWEEN':
+                v = "{} AND {}".format(add_quotes(v[0]), add_quotes(v[-1]))
             condition.append("{} {} {}".format(field, opt, str(v)))
         self._condition = ' and '.join(condition)
         return self
@@ -75,6 +78,8 @@ class Longan:
             sql += SqlConfig.WHERE
         if self._group_field:
             sql += SqlConfig.GROUP_BY
+        if self._ignore_case:
+            sql += self._ignore_case
         sql = sql.format(self._table_name, self._condition, self._group_field)
         ret = DBHandler.execute(sql)
         self.clear()
@@ -175,11 +180,19 @@ class Longan:
         self._aggregate = ','.join(aggr_list)
         return self
 
+    def ignore_case(self, ignore=True):
+        if ignore:
+            self._ignore_case = " COLLATE NOCASE "
+        else:
+            self._ignore_case = None
+        return self
+
     def clear(self):
         self._condition = None
         self._group_field = None
         self._group_opt = None
         self._aggregate = None
+        self._ignore_case = None
 
     @staticmethod
     def close():

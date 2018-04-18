@@ -1,6 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.4
+# 欢迎使用longan-sqlite3 v0.5
 
 ------
 
@@ -16,6 +16,11 @@
 
 
 > 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
+
+> 0.5 where子句
+>       1.新增 between 和 in 的支持, 新增方法；
+>       2.提供like表达式忽略大小写的功能
+>     init方法提供debug模式，可以打印sql语句
 
 > 0.4 新增API文档
 
@@ -33,7 +38,7 @@ longan 是一种水果，很甜，喜欢的人吃很多，不喜欢的人一吃�
 - [x] 支持 CRUD
 - [x] 支持 分组聚合函数
 - [x] 修复 API文档
-- [ ] 新增 where 语句支持
+- [x] 新增 where 语句支持
 
 ### 2. 以下是我们的行为守恒公式
 
@@ -47,7 +52,7 @@ from longan_sqlite import Longan, Flesh
 ```
  - 初始化longan
 ```python
-Longan.init('test.db')
+Longan.init('test.db', True)
 ```
  - 实例化longan
 ```python
@@ -111,6 +116,7 @@ for r in ret:
 
 | 接口        | 参数   |  说明  |
 | :--------:   | :-----:  | :----  |
+| init | db_path, debug | 初始化数据库文件，开启debug模式后，将会打印sql语句 |
 | select     | - |   未开放，当前版本默认为选择全部字段，除非使用聚合函数     |
 | from_table | table_name | 指定查询表 |
 | where | **field_condition | 借鉴了Django中查询的操作，"_"前为字段名，后为表达式，需要传递值 |
@@ -120,5 +126,6 @@ for r in ret:
 | aggregate | **field_condition | 可以参考where语句：字段名_聚合函数名="别名" |
 | query | - | 查询，需要组合使用 |
 | primary_key | - | 主键 |
+| ignore_case | ignore | 是否忽略大小写 |
 
 </font>

@@ -15,3 +15,9 @@ def convert_dicts(fields, items):
             item_dict[v] = i[k]
         ret_items.append(Flesh(item_dict))
     return ret_items
+
+
+def add_quotes(value):
+    if isinstance(value, str):
+        value = '"{}"'.format(value)
+    return value
