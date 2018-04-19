@@ -1,6 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.5
+# 欢迎使用longan-sqlite3 v0.6
 
 ------
 
@@ -16,6 +16,8 @@
 
 
 > 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
+
+> 0.6 新增排序和分页的函数，支持了几乎所有聚合函数
 
 > 0.5 where子句
 >       1.新增 between 和 in 的支持, 新增方法；
@@ -127,5 +129,7 @@ for r in ret:
 | query | - | 查询，需要组合使用 |
 | primary_key | - | 主键 |
 | ignore_case | ignore | 是否忽略大小写 |
+| limit | num, offset | 分页 |
+| order_by | field, desc |根据字段进行排序 |
 
 </font>

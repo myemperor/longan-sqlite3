@@ -19,7 +19,11 @@ aggr_opt_map = {
     'avg': 'AVG',
     'max': 'MAX',
     'min': 'MIN',
+    'abs': 'ABS',
+    'upper': 'UPPER',
+    'lower': 'LOWER',
     'count': 'COUNT',
+    'length': 'LENGTH',
 }
 
 
@@ -32,3 +36,5 @@ class SqlConfig:
 
     WHERE = " WHERE {} "
     GROUP_BY = " GROUP BY {} "
+    ORDER_BY = " ORDER BY {} {}"
+    LIMIT = " LIMIT {} OFFSET {} "

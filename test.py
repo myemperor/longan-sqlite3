@@ -35,9 +35,14 @@ for r in ret:
         # longan.delete(r)
 
 # 0.3新增分组聚合查询
-longan.aggregate(age_max="maxAge", salary_min="minSalary")
-longan.where(age_gt=5)
-longan.group_by('address')
+# 0.6支持选择其他字段，但和多个返回结果唯一的聚合函数一起使用时，结果可能出乎意料
+# longan.aggregate(age_max="maxAge", salary_min="minSalary", id="ID")
+longan.aggregate(name_upper="upperName", id="", salary="")
+# 0.6新增排序和分页
+longan.order_by("id", True)
+longan.limit(2, 2)
+# longan.where(age_gt=5)
+# longan.group_by('address')
 ret = longan.query()
 for r in ret:
     print(r)

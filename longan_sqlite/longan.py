@@ -80,6 +80,11 @@ class Longan:
             sql += SqlConfig.GROUP_BY
         if self._ignore_case:
             sql += self._ignore_case
+        if self._order_by:
+            sql += self._order_by
+        if self._limit:
+            sql += self._limit
+
         sql = sql.format(self._table_name, self._condition, self._group_field)
         ret = DBHandler.execute(sql)
         self.clear()
@@ -165,18 +170,23 @@ class Longan:
         聚合函数
         格式如下：   字段名_聚合函数名="别名"
                     如果别名为空字符串，则默认别名为：字段名_聚合函数名
+                    如果不需要使用函数，则直接使用：字段名="别名" 即可
         :param kwargs: age_max="maxAge"
         :return:
         """
         aggr_list = []
         for k, v in kwargs.items():
             index = k.find('_')
-            field = k[:index]
-            aggr = k[index + 1:]
-            if aggr in aggr_opt_map:
-                v = v if v else k
-                sql = "{}({}) {}".format(aggr_opt_map[aggr], field, v)
-                aggr_list.append(sql)
+            sql = ""
+            v = v if v else k
+            if index != -1:
+                field = k[:index]
+                aggr = k[index + 1:]
+                if aggr in aggr_opt_map:
+                    sql = "{}({}) {}".format(aggr_opt_map[aggr], field, v)
+            else:
+                sql = v
+            aggr_list.append(sql)
         self._aggregate = ','.join(aggr_list)
         return self
 
@@ -187,12 +197,25 @@ class Longan:
             self._ignore_case = None
         return self
 
+    def limit(self, limit, offset=0):
+        if limit == None or limit < 1:
+            raise RuntimeError("Limit must greater than 0")
+        if offset < 0:
+            raise RuntimeError("Offset must be positive")
+        self._limit = SqlConfig.LIMIT.format(limit, offset)
+
+    def order_by(self, key, desc=False):
+        order = "DESC" if desc else "ASC"
+        self._order_by = SqlConfig.ORDER_BY.format(key, order)
+
     def clear(self):
         self._condition = None
         self._group_field = None
         self._group_opt = None
         self._aggregate = None
         self._ignore_case = None
+        self._limit = None
+        self._order_by = None
 
     @staticmethod
     def close():
