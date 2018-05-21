@@ -1,6 +1,6 @@
 from longan_sqlite import Longan, Flesh
 
-Longan.init('test.db', True)
+Longan.init('test.db', debug=True)
 longan = Longan('company')
 longan.execute_file('company.sql')
 # 批量插入或修改
@@ -39,7 +39,7 @@ for r in ret:
 # longan.aggregate(age_max="maxAge", salary_min="minSalary", id="ID")
 longan.aggregate(name_upper="upperName", id="", salary="")
 # 0.6新增排序和分页
-longan.order_by("id", True)
+longan.order_by("id", desc=True)
 longan.limit(2, 2)
 # longan.where(age_gt=5)
 # longan.group_by('address')
@@ -47,7 +47,6 @@ ret = longan.query()
 for r in ret:
     print(r)
 # ret = longan.where(age_gt=5).query()
-
 
 # 通过条件进行删除
 longan.where(id_gt=0).delete()

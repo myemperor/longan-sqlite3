@@ -27,6 +27,33 @@ aggr_opt_map = {
 }
 
 
+class FieldType:
+    INT = 'INT'
+    INTEGER = "INTEGER"
+    CHAR = "CHAR"
+    VARCHAR = "VARCHAR"
+    NCHAR = "NCHAR"
+    NVACHAR = "NVACHAR"
+    TEXT = "TEXT"
+    BLOB = "BLOB"
+    REAL = "REAL"
+    DOUBLE = "DOUBLE"
+    FLOAT = "FLOAT"
+    NUMERIC = "NUMERIC"
+    BOOLEAN = "BOOLEAN"
+    DATE = "DATE"
+    DATETIME = "DATETIME"
+
+
+class FieldAttr:
+    NOT_NULL = "NOT NULL"
+    DEFAULT = "DEFAULT"
+    UNIQUE = "UNIQUE"
+    PRIMARY_KEY = "PRIMARY KEY"
+    AUTOINCREMENT = "AUTOINCREMENT"
+    CHECK = "CHECK({})"
+
+
 class SqlConfig:
     SELECT = 'SELECT * FROM {}'
     INSERT = "INSERT OR IGNORE INTO {} ({}) VALUES({})"
@@ -38,3 +65,6 @@ class SqlConfig:
     GROUP_BY = " GROUP BY {} "
     ORDER_BY = " ORDER BY {} {}"
     LIMIT = " LIMIT {} OFFSET {} "
+
+    CREAT_TABLE = "\nCREATE TABLE IF NOT EXISTS {}(\n\t{}\n);"
+    CREAT_TABLE_FORCE = "\nCREATE TABLE {}(\n\t{}\n);"

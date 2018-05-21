@@ -1,6 +1,7 @@
 from .handler import DBHandler
 from .config import *
 from .util import *
+import re
 
 
 class Longan:
@@ -12,6 +13,7 @@ class Longan:
               md.delete(field_obj)
     """
     db_path = None
+    FieldType = FieldType
 
     @staticmethod
     def init(db_path, debug=False):
@@ -22,11 +24,14 @@ class Longan:
         """
         仅提供初始化，处理表 的操作
         :param table_name: 待处理的表
+        :type  table_name: str
         """
         if not Longan.db_path:
             raise RuntimeError("Please init db_path first!")
         if table_name:
             self.from_table(table_name)
+        else:
+            self.clear()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         DBHandler.close()
@@ -35,7 +40,6 @@ class Longan:
         """
         设置需要处理的表
         :param table_name: 待处理的表
-        :return: BaseModel
         """
         self._table_name = table_name
         self._key = None
@@ -47,7 +51,6 @@ class Longan:
         提供where语句的封装：
         如：md.where(age_gt=5,name_like='m%') = "WHERE age > 5 and name like 'm%'"
         :param kwargs: 字典
-        :return: BaseModel
         """
 
         condition = []
@@ -105,7 +108,7 @@ class Longan:
             if DBHandler.affect() == 0:
                 update_sql = SqlConfig.UPDATE
                 value = obj.join('=')
-                where = "{}={}".format(key, obj.get(key))
+                where = "{}={}".format(key, add_quotes(obj.get(key)))
                 update_sql = update_sql.format(self._table_name, value, where)
                 DBHandler.execute(update_sql)
             else:
@@ -118,6 +121,7 @@ class Longan:
         md.where(age_lt=50).delete()
         md.delete(field_obj)
         :param field_obj: Filed
+        :type  field_obj: Flesh
         :return: 0 or 1
         """
         sql = SqlConfig.DELETE
@@ -152,7 +156,7 @@ class Longan:
         for column in column_list:
             column = column.strip()
             if 'PRIMARY KEY' in column.upper():
-                if '(' in column:
+                if '(' in column and "CONSTRAINT" in column:
                     start = column.find('(') + 1
                     end = column.rfind(')')
                     key = column[start:end].strip()
@@ -162,6 +166,12 @@ class Longan:
                 return self._key
 
     def group_by(self, field):
+        """
+        分组
+        :param field: 字段名称
+        :type  field: str
+        :return:
+        """
         self._group_field = field
         return self
 
@@ -191,6 +201,12 @@ class Longan:
         return self
 
     def ignore_case(self, ignore=True):
+        """
+        是否忽略大小写
+        :param ignore: 是否
+        :type  ignore: bool
+        :return: Longan
+        """
         if ignore:
             self._ignore_case = " COLLATE NOCASE "
         else:
@@ -198,15 +214,106 @@ class Longan:
         return self
 
     def limit(self, limit, offset=0):
+        """
+        分页
+        :param limit: 数量
+        :param offset: 位置
+
+        :type  limit: int
+        :type  offset: int
+        """
         if limit == None or limit < 1:
             raise RuntimeError("Limit must greater than 0")
         if offset < 0:
             raise RuntimeError("Offset must be positive")
         self._limit = SqlConfig.LIMIT.format(limit, offset)
+        return self
 
     def order_by(self, key, desc=False):
+        """
+        排序
+        :param key:  字段名称
+        :param desc: 顺序
+        :return: self
+        :rtype Longan
+        """
         order = "DESC" if desc else "ASC"
         self._order_by = SqlConfig.ORDER_BY.format(key, order)
+        return self
+
+    def field(self, name=None, type=None, not_null=False, default=None, unique=None
+              , primary_key=False, check=None, length=0, increment=False):
+        """
+        创建一个表格时使用，用于生成单个字段
+
+        :param name:        字段名称
+        :param type:        字段类型
+        :param not_null:    是否可以为null
+        :param default:     默认值
+        :param unique:      是否唯一
+        :param primary_key: 是否为主键
+        :param check:       值的范围  start_end   如：大于5(5), 小于10(_10), 介于5-10之间(5_10)
+        :param length:      字段类型的长度，当类型为字符串时，需要显示的指定
+        :param increment:   自增
+
+        :type name          str
+        :type type          str
+        :type not_null      bool
+        :type unique        bool
+        :type primary_key   bool
+        :type check:        str
+        :type length:       int
+        :type increment:    bool
+        :return: self
+        """
+        if not name or not type:
+            raise RuntimeError("need param!")
+        type = type.upper()
+        if FieldType.CHAR in type and length <= 0:
+            raise RuntimeError("Char type need init length！")
+        if length:
+            type = "{}({})".format(type, length)
+
+        row = [name, type]
+        if not_null:
+            row.append(FieldAttr.NOT_NULL)
+        if default:
+            row.append(FieldAttr.DEFAULT + " " + add_quotes(default))
+        if unique:
+            row.append(FieldAttr.UNIQUE)
+        if primary_key:
+            row.append(FieldAttr.PRIMARY_KEY)
+        if increment and type == FieldType.INTEGER and primary_key:
+            row.append(FieldAttr.AUTOINCREMENT)
+        if check:
+            check_list = check.split("_")
+            check = ""
+            if check_list[0]:
+                check = name + ">" + check_list[0]
+            if check_list[1]:
+                if check:
+                    check += " AND "
+                check += name + "<" + check_list[1]
+            row.append(FieldAttr.CHECK.format(check))
+        self._field_row.append(" ".join(row))
+        return self
+
+    def create_table(self, table_name=None, force=False):
+        """
+        创建一张表
+        :param table_name:  表名
+        :param force:       是否强制创建
+        """
+        if not self._field_row:
+            raise RuntimeError("please create field first!")
+        if not table_name:
+            raise RuntimeError("Need table name")
+        sql = SqlConfig.CREAT_TABLE_FORCE if force else SqlConfig.CREAT_TABLE
+        sql = sql.format(table_name.upper(), ",\n\t".join(self._field_row))
+        DBHandler.execute(sql)
+        self.clear()
+        DBHandler.commit()
+        self.from_table(table_name)
 
     def clear(self):
         self._condition = None
@@ -216,6 +323,7 @@ class Longan:
         self._ignore_case = None
         self._limit = None
         self._order_by = None
+        self._field_row = []
 
     @staticmethod
     def close():

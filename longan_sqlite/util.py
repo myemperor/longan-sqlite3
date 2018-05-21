@@ -20,4 +20,4 @@ def convert_dicts(fields, items):
 def add_quotes(value):
     if isinstance(value, str):
         value = '"{}"'.format(value)
-    return value
+    return str(value)
