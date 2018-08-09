@@ -35,6 +35,6 @@ class Flesh:
         ret_s = []
         for k, v in self.__dict__.items():
             if isinstance(v, str):
-                v = '"{}"'.format(v)
+                v = '"{}"'.format(v.replace('"', "'"))
             ret_s.append("{}{}{}".format(k, s, v))
         return ','.join(ret_s)
