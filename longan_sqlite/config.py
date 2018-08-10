@@ -59,7 +59,7 @@ class SqlConfig:
     INSERT = "INSERT OR IGNORE INTO {} ({}) VALUES({})"
     UPDATE = "UPDATE {} SET {} WHERE {}"
     DELETE = "DELETE FROM {} WHERE {}"
-    TABLE_INFO = "SELECT * FROM sqlite_master WHERE type='table' and name like '{}'"
+    TABLE_INFO = "PRAGMA TABLE_INFO({})"
 
     WHERE = " WHERE {} "
     GROUP_BY = " GROUP BY {} "

@@ -1,6 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.6
+# 欢迎使用longan-sqlite3 v0.8
 
 ------
 
@@ -16,6 +16,8 @@
 
 
 > 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
+
+> 0.8 修复获取表主键的方式，并增加了 Kernel 和 FastFlesh 以简化操作
 
 > 0.7 新增创建表
 

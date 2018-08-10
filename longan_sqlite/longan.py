@@ -1,7 +1,7 @@
 from .handler import DBHandler
 from .config import *
 from .util import *
-import re
+from .kernel import Kernel
 
 
 class Longan:
@@ -42,7 +42,8 @@ class Longan:
         :param table_name: 待处理的表
         """
         self._table_name = table_name
-        self._key = None
+        self._primary_key = None
+        self._fields = None
         self.clear()
         return self
 
@@ -145,25 +146,25 @@ class Longan:
         通过sql语句获取当前表的主键
         :return:
         """
-        if self._key:
-            return self._key
-        sql = SqlConfig.TABLE_INFO.format(self._table_name)
-        table_info = DBHandler.execute(sql)[0]
-        create_sql = table_info[4]
-        start = create_sql.find('(') + 1
-        end = create_sql.rfind(')')
-        column_list = create_sql[start:end].split(',')
-        for column in column_list:
-            column = column.strip()
-            if 'PRIMARY KEY' in column.upper():
-                if '(' in column and "CONSTRAINT" in column:
-                    start = column.find('(') + 1
-                    end = column.rfind(')')
-                    key = column[start:end].strip()
-                else:
-                    key = column[:column.find(' ') + 1]
-                self._key = key.strip()
-                return self._key
+        if not self._primary_key:
+            fields = self.all_fields()
+            for f in fields:
+                if f.primary == 1:
+                    self._primary_key = f.name
+                    break
+        return self._primary_key
+
+    def all_fields(self):
+        """
+        通过sql语句获取当前表的所有键
+        :return:
+        """
+        if not self._fields:
+            sql = SqlConfig.TABLE_INFO.format(self._table_name)
+            fields = DBHandler.execute(sql)
+            for f in fields:
+                self._fields.append(Kernel(f))
+        return self._fields
 
     def group_by(self, field):
         """
@@ -316,6 +317,8 @@ class Longan:
         self.from_table(table_name)
 
     def clear(self):
+        self._primary_key = None
+        self._fields = []
         self._condition = None
         self._group_field = None
         self._group_opt = None

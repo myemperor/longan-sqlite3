@@ -7,6 +7,7 @@ class Flesh:
         if not _dict:
             _dict = kwargs
         for k, v in _dict.items():
+            v = None if v == "null" else v
             self.__setattr__(k, v)
 
     def get(self, name):
@@ -36,5 +37,7 @@ class Flesh:
         for k, v in self.__dict__.items():
             if isinstance(v, str):
                 v = '"{}"'.format(v.replace('"', "'"))
+            if v is None:
+                v = "null"
             ret_s.append("{}{}{}".format(k, s, v))
         return ','.join(ret_s)
