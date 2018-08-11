@@ -19,11 +19,9 @@ class Longan:
     @staticmethod
     def init(db_path, debug=False):
         abspath = os.path.abspath(db_path)
-        if Longan.db_path == abspath:
-            print("aleardy")
-            return
-        Longan.db_path = os.path.abspath(db_path)
-        Longan.db_handler = DBHandler(db_path, debug)
+        if Longan.db_path != abspath:
+            Longan.db_path = os.path.abspath(db_path)
+            Longan.db_handler = DBHandler(db_path, debug)
 
     def __init__(self, table_name=None):
         """
