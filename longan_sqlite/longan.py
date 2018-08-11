@@ -2,6 +2,7 @@ from .handler import DBHandler
 from .config import *
 from .util import *
 from .kernel import Kernel
+import os
 
 
 class Longan:
@@ -13,12 +14,16 @@ class Longan:
               md.delete(field_obj)
     """
     db_path = None
-    FieldType = FieldType
+    db_handler = None
 
     @staticmethod
     def init(db_path, debug=False):
-        Longan.db_path = db_path
-        DBHandler.init(db_path, debug)
+        abspath = os.path.abspath(db_path)
+        if Longan.db_path == abspath:
+            print("aleardy")
+            return
+        Longan.db_path = os.path.abspath(db_path)
+        Longan.db_handler = DBHandler(db_path, debug)
 
     def __init__(self, table_name=None):
         """
@@ -34,7 +39,7 @@ class Longan:
             self.clear()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        DBHandler.close()
+        Longan.db_handler.close()
 
     def from_table(self, table_name):
         """
@@ -90,9 +95,9 @@ class Longan:
             sql += self._limit
 
         sql = sql.format(self._table_name, self._condition, self._group_field)
-        ret = DBHandler.execute(sql)
+        ret = Longan.db_handler.execute(sql)
         self.clear()
-        field_arr = [field[0] for field in DBHandler.desc()]
+        field_arr = [field[0] for field in Longan.db_handler.desc()]
         return convert_dicts(field_arr, ret)
 
     def insert_or_update(self, *field_obj):
@@ -104,17 +109,17 @@ class Longan:
         insert_sql_0 = SqlConfig.INSERT
         for obj in field_obj:
             insert_sql = insert_sql_0.format(self._table_name, obj.keys_str(), obj.values_str())
-            DBHandler.execute(insert_sql)
+            Longan.db_handler.execute(insert_sql)
             key = self.primary_key()
-            if DBHandler.affect() == 0:
+            if Longan.db_handler.affect() == 0:
                 update_sql = SqlConfig.UPDATE
                 value = obj.join('=')
                 where = "{}={}".format(key, add_quotes(obj.get(key)))
                 update_sql = update_sql.format(self._table_name, value, where)
-                DBHandler.execute(update_sql)
+                Longan.db_handler.execute(update_sql)
             else:
-                obj.set(key, DBHandler.last_id(), force=False)
-        DBHandler.commit()
+                obj.set(key, Longan.db_handler.last_id(), force=False)
+        Longan.db_handler.commit()
 
     def delete(self, field_obj=None):
         """
@@ -136,10 +141,10 @@ class Longan:
             if not self._condition:
                 return 0
             sql = sql.format(self._table_name, self._condition)
-        DBHandler.execute(sql)
+        Longan.db_handler.execute(sql)
         self.clear()
-        DBHandler.commit()
-        return DBHandler.affect()
+        Longan.db_handler.commit()
+        return Longan.db_handler.affect()
 
     def primary_key(self):
         """
@@ -161,7 +166,7 @@ class Longan:
         """
         if not self._fields:
             sql = SqlConfig.TABLE_INFO.format(self._table_name)
-            fields = DBHandler.execute(sql)
+            fields = Longan.db_handler.execute(sql)
             for f in fields:
                 self._fields.append(Kernel(f))
         return self._fields
@@ -311,9 +316,9 @@ class Longan:
             raise RuntimeError("Need table name")
         sql = SqlConfig.CREAT_TABLE_FORCE if force else SqlConfig.CREAT_TABLE
         sql = sql.format(table_name.upper(), ",\n\t".join(self._field_row))
-        DBHandler.execute(sql)
+        Longan.db_handler.execute(sql)
         self.clear()
-        DBHandler.commit()
+        Longan.db_handler.commit()
         self.from_table(table_name)
 
     def clear(self):
@@ -330,7 +335,7 @@ class Longan:
 
     @staticmethod
     def close():
-        DBHandler.close()
+        Longan.db_handler.close()
 
     @staticmethod
     def execute(sql):
@@ -339,7 +344,7 @@ class Longan:
         :param sql:
         :return:
         """
-        return DBHandler.execute(sql)
+        return Longan.db_handler.execute(sql)
 
     @staticmethod
     def execute_file(sql_path):
@@ -349,4 +354,4 @@ class Longan:
         :return:
         """
         with open(sql_path) as f:
-            return DBHandler.execute(f.read())
+            return Longan.db_handler.execute(f.read())
