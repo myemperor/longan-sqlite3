@@ -2,41 +2,31 @@ import sqlite3
 
 
 class DBHandler:
-    _connect = None
-    _cursor = None
-    _debug = False
 
-    @staticmethod
-    def init(db_path, debug=False):
-        DBHandler._connect = sqlite3.connect(db_path)
-        DBHandler._cursor = DBHandler._connect.cursor()
-        DBHandler._debug = debug
+    def __init__(self, db_path, debug=False):
+        self._debug = debug
+        self._connect = sqlite3.connect(db_path)
+        self._cursor = self._connect.cursor()
 
-    @staticmethod
-    def execute(sql):
-        if DBHandler._debug:
-            print("[Longan Debug]",end='\t')
+    def execute(self, sql):
+        if self._debug:
+            print("[Longan Debug]", end='\t')
             print(sql)
-        DBHandler._cursor.execute(sql)
-        return DBHandler._cursor.fetchall()
+        self._cursor.execute(sql)
+        return self._cursor.fetchall()
 
-    @staticmethod
-    def commit():
-        DBHandler._connect.commit()
+    def commit(self):
+        self._connect.commit()
 
-    @staticmethod
-    def close():
-        DBHandler._cursor.close()
-        DBHandler._connect.close()
+    def close(self):
+        self._cursor.close()
+        self._connect.close()
 
-    @staticmethod
-    def desc():
-        return DBHandler._cursor.description
+    def desc(self):
+        return self._cursor.description
 
-    @staticmethod
-    def affect():
-        return DBHandler._cursor.rowcount
+    def affect(self):
+        return self._cursor.rowcount
 
-    @staticmethod
-    def last_id():
-        return DBHandler._cursor.lastrowid
+    def last_id(self):
+        return self._cursor.lastrowid
