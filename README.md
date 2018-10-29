@@ -136,7 +136,7 @@ for r in ret:
 | limit | num, offset | 分页 |
 | order_by | field, desc |根据字段进行排序 |
 
-### 5.where子句操作表达式表
+### 5. Where子句操作表达式
 | 操作符        | 运算符   |  说明  |
 | :--------:   | :-----:  | :----  |
 | gt | > | 大于 |
