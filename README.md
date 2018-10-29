@@ -146,7 +146,7 @@ for r in ret:
 | egt | >= | 不小于 |
 | elt | <= | 不大于 |
 | like | LIKE | 字符串模糊查询 |
-| in | IN | 集合查询，参数传值为list，如: age_in=[28, 29, 30] |
-| between | BETWEEN | 介于两值之间，参数传值为两个元素的list,如有多个则取第一个和最后一个，如：age_between=[28, 30] |
+| in | IN | 集合查询，参数传值为tuple，如: age_in=(28, 29, 30) |
+| between | BETWEEN | 介于两值之间，参数传值为两个元素的tuple,如有多个则取第一个和最后一个，如：age_between=(28, 30) |
 
 </font>
