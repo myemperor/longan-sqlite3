@@ -129,11 +129,24 @@ for r in ret:
 | insert_or_update | *field_obj | 将一个或多个Flesh对象插入或更新到表中，会自动为对象添加主键 |
 | delete | *field_obj | 可以通过where方法来根据条件来进行删除，也可以对一个或多个Flesh对象直接删除，前提是对象拥有主键 |
 | group_by | field | 对指定字段进行分组 |
-| aggregate | **field_condition | 可以参考where语句：字段名_聚合函数名="别名" |
+| aggregate | **field_condition | 可以参考where语句：字段名_**聚合函数名**="别名" |
 | query | - | 查询，需要组合使用 |
 | primary_key | - | 主键 |
 | ignore_case | ignore | 是否忽略大小写 |
 | limit | num, offset | 分页 |
 | order_by | field, desc |根据字段进行排序 |
+
+### 5.where子句操作表达式表
+| 操作符        | 运算符   |  说明  |
+| :--------:   | :-----:  | :----  |
+| gt | > | 大于 |
+| lt | < | 小于 |
+| eq | = | 等于 |
+| neq | != | 不等于 |
+| egt | >= | 不小于 |
+| elt | <= | 不大于 |
+| like | LIKE | 字符串模糊查询 |
+| in | IN | 集合查询，参数传值为list，如: age_in=[28, 29, 30] |
+| between | BETWEEN | 介于两值之间，参数传值为两个元素的list,如有多个则取第一个和最后一个，如：age_between=[28, 30] |
 
 </font>
