@@ -64,8 +64,12 @@ class Longan:
             opt = opt_map[k[index + 1:]]
             v = add_quotes(v)
             if opt == 'IN':
+                if not isinstance(v, tuple):
+                    raise RuntimeError("Opt(IN) value must be tuple!")
                 v = "({})".format(", ".join([add_quotes(x) for x in v]))
             if opt == 'BETWEEN':
+                if not isinstance(v, tuple):
+                    raise RuntimeError("Opt(BETWEEN) value must be tuple!")
                 v = "{} AND {}".format(add_quotes(v[0]), add_quotes(v[-1]))
             condition.append("{} {} {}".format(field, opt, str(v)))
         self._condition = ' and '.join(condition)

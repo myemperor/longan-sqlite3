@@ -25,8 +25,8 @@ longan.insert_or_update(flesh)
 #              like可以忽略大小写
 ret = longan.ignore_case() \
     .where(age_gt=5, name_like="%JOB%",
-           salary_between=[50, 100],
-           address_in=['America', 'china', '朝鲜']).query()
+           salary_between=(50, 100),
+           address_in=('America', 'china', '朝鲜')).query()
 for r in ret:
     print(r)
     if r.name == 'jobs':
