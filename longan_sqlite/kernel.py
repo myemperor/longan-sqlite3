@@ -2,6 +2,10 @@ import json
 
 
 class Kernel:
+    """
+    此类是对表的字段进行封装
+    """
+
     def __init__(self, field_info):
         if len(field_info) < 6:
             raise RuntimeError("Error Field!")
