@@ -1,7 +1,6 @@
 <font style='font-family:Courier New '>
 
-# 欢迎使用longan-sqlite3 v0.8
-
+# 欢迎使用longan-sqlite3 v1.0
 ------
 
 我们理解您需要更便捷更高效更轻量级的工具记录数据，并将其中承载的价值传播给他人，**longan-sqlite3** 是我们给出的答案 ———— 让您随心所欲的完成如下功能
@@ -15,7 +14,9 @@
 
 
 
-> 您现在看到的这个 longan-sqlite3 版本，仅为开发版，功能将陆续增加
+> 您现在看到的这个 longan-sqlite3 版本，为正式版，以发布至pypi
+
+> 1.0 正式发布至pypi
 
 > 0.8 修复获取表主键的方式，并增加了 Kernel 和 FastFlesh 以简化操作
 
