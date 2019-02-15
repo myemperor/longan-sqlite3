@@ -53,6 +53,11 @@ longan=mc^2
 
 ### 3. 使用方法
 
+ - 安装
+```shell
+pip install longan_sqlite
+```
+
  - 导入longan
 ```python
 from longan_sqlite import Longan, Flesh
