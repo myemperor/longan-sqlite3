@@ -1,8 +1,15 @@
 from longan_sqlite import Longan, Flesh
 
+# 初始化Longan，指定数据库地址
+# debug为true，则打印所有sql语句
 Longan.init('test.db', debug=True)
+
+# 指定某张表实例化longan
 longan = Longan('company')
+
+# 执行sql文件
 longan.execute_file('company.sql')
+
 # 批量插入或修改
 flesh_list = [
     Flesh(name='jobs', age=50, address='America', salary=90),
@@ -38,6 +45,7 @@ for r in ret:
 # 0.6支持选择其他字段，但和多个返回结果唯一的聚合函数一起使用时，结果可能出乎意料
 # longan.aggregate(age_max="maxAge", salary_min="minSalary", id="ID")
 longan.aggregate(name_upper="upperName", id="", salary="")
+
 # 0.6新增排序和分页
 longan.order_by("id", desc=True)
 longan.limit(2, 2)
