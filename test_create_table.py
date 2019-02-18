@@ -1,4 +1,4 @@
-from longan_sqlite import *
+from longan_sqlite import Longan, Flesh, FieldType
 
 Longan.init('test.db', debug=True)
 longan = Longan()
