@@ -59,7 +59,7 @@ class Longan:
 
         condition = []
         for k, v in kwargs.items():
-            index = k.find('_')
+            index = k.rfind('_')
             field = k[:index]
             opt = opt_map[k[index + 1:]]
             v = add_quotes(v)
