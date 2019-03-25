@@ -194,7 +194,7 @@ class Longan:
         """
         aggr_list = []
         for k, v in kwargs.items():
-            index = k.find('_')
+            index = k.rfind('_')
             sql = ""
             v = v if v else k
             if index != -1:
