@@ -113,7 +113,7 @@ class Longan:
             insert_sql = insert_sql_0.format(self._table_name, obj.keys_str(), obj.values_str())
             Longan.db_handler.execute(insert_sql)
             key = self.primary_key()
-            if Longan.db_handler.affect() == 0:
+            if Longan.db_handler.affect() <= 0:
                 update_sql = SqlConfig.UPDATE
                 value = obj.join('=')
                 where = "{}={}".format(key, add_quotes(obj.get(key)))
