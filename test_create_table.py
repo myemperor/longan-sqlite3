@@ -1,12 +1,12 @@
-from longan_sqlite import Longan, Flesh
+from longan_sqlite import Longan, Flesh, FieldType
 
 Longan.init('test.db', debug=True)
 longan = Longan()
-longan.field(name="age", type=Longan.FieldType.INT, not_null=True, default=15, primary_key=False
+longan.field(name="age", type=FieldType.INT, not_null=True, default=15, primary_key=False
              , unique=False, check="10_80")
-longan.field(name="name", type=Longan.FieldType.VARCHAR, not_null=True, default="xx", primary_key=True
+longan.field(name="name", type=FieldType.VARCHAR, not_null=True, default="xx", primary_key=True
              , unique=True, length=10)
-longan.field(name="id", type=Longan.FieldType.INT, not_null=True
+longan.field(name="id", type=FieldType.INT, not_null=True
              , unique=True, increment=True)
 longan.create_table("m_test")
 
