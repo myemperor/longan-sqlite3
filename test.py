@@ -27,6 +27,14 @@ longan.insert_or_update(flesh)
 flesh.salary += 5
 longan.insert_or_update(flesh)
 
+# 插入或更新的单独接口
+# 1.1
+flesh = Flesh(name='picker', age=33, address='北京', salary=30)
+longan.insert(flesh)
+# 裁员
+flesh.salary -= 5
+longan.update(flesh)
+
 # 查询
 # 0.5 where子句 新增 between 和 in 的支持
 #              like可以忽略大小写

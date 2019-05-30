@@ -134,6 +134,8 @@ for r in ret:
 | from_table | table_name | 指定查询表 |
 | where | **field_condition | 借鉴了Django中查询的操作，"_"前为字段名，后为表达式，需要传递值 |
 | insert_or_update | *field_obj | 将一个或多个Flesh对象插入或更新到表中，会自动为对象添加主键 |
+| insert | *field_obj | 将一个或多个Flesh对象插入到表中，会自动为对象添加主键 |
+| update | *field_obj | 将一个或多个Flesh对象更新到表中|
 | delete | *field_obj | 可以通过where方法来根据条件来进行删除，也可以对一个或多个Flesh对象直接删除，前提是对象拥有主键 |
 | group_by | field | 对指定字段进行分组 |
 | aggregate | **field_condition | 可以参考where语句：字段名_**聚合函数名**="别名" |

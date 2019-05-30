@@ -11,7 +11,7 @@ class Flesh:
             self.__setattr__(k, v)
 
     def get(self, name):
-        return self.__dict__[name]
+        return self.__dict__[name] if name in self.__dict__ else None
 
     def set(self, name, value, force=True):
         if force or name not in self.__dict__:

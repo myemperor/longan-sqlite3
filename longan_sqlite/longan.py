@@ -108,19 +108,46 @@ class Longan:
         :param field_obj: Filed
         :return:
         """
-        insert_sql_0 = SqlConfig.INSERT
+        key = self.primary_key()
         for obj in field_obj:
-            insert_sql = insert_sql_0.format(self._table_name, obj.keys_str(), obj.values_str())
-            Longan.db_handler.execute(insert_sql)
-            key = self.primary_key()
-            if Longan.db_handler.affect() <= 0:
+            if obj.get(key):
                 update_sql = SqlConfig.UPDATE
                 value = obj.join('=')
                 where = "{}={}".format(key, add_quotes(obj.get(key)))
                 update_sql = update_sql.format(self._table_name, value, where)
                 Longan.db_handler.execute(update_sql)
             else:
+                insert_sql = SqlConfig.INSERT.format(self._table_name, obj.keys_str(), obj.values_str())
+                Longan.db_handler.execute(insert_sql)
                 obj.set(key, Longan.db_handler.last_id(), force=False)
+        Longan.db_handler.commit()
+
+    def insert(self, *field_obj):
+        """
+        插入
+        :param field_obj: Filed
+        :return:
+        """
+        key = self.primary_key()
+        for obj in field_obj:
+            insert_sql = SqlConfig.INSERT.format(self._table_name, obj.keys_str(), obj.values_str())
+            Longan.db_handler.execute(insert_sql)
+            obj.set(key, Longan.db_handler.last_id(), force=False)
+        Longan.db_handler.commit()
+
+    def update(self, *field_obj):
+        """
+        更新
+        :param field_obj: Field
+        :return:
+        """
+        key = self.primary_key()
+        for obj in field_obj:
+            update_sql = SqlConfig.UPDATE
+            value = obj.join('=')
+            where = "{}={}".format(key, add_quotes(obj.get(key)))
+            update_sql = update_sql.format(self._table_name, value, where)
+            Longan.db_handler.execute(update_sql)
         Longan.db_handler.commit()
 
     def delete(self, field_obj=None):
