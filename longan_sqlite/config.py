@@ -12,7 +12,7 @@ opt_map = {
     'like': 'LIKE',
     'in': 'IN',
     'between': 'BETWEEN',
-    'exists': 'EXISTS',
+    'is': 'IS',
 }
 
 aggr_opt_map = {

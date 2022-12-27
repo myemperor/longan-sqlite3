@@ -19,5 +19,8 @@ def convert_dicts(fields, items):
 
 def add_quotes(value):
     if isinstance(value, str):
-        value = '"{}"'.format(value.replace('"', "'"))
+        if value.upper() == 'NULL' or value.upper() == 'NOT NULL':
+            value = value.upper()
+        else:
+            value = '"{}"'.format(value.replace('"', "'"))
     return value

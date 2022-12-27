@@ -67,7 +67,7 @@ class Longan:
                 if not isinstance(v, tuple):
                     raise RuntimeError("Opt(IN) value must be tuple!")
                 v = "({})".format(", ".join([add_quotes(x) for x in v]))
-            if opt == 'BETWEEN':
+            elif opt == 'BETWEEN':
                 if not isinstance(v, tuple):
                     raise RuntimeError("Opt(BETWEEN) value must be tuple!")
                 v = "{} AND {}".format(add_quotes(v[0]), add_quotes(v[-1]))
