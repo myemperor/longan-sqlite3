@@ -383,4 +383,5 @@ class Longan:
         :return:
         """
         with open(sql_path) as f:
-            return Longan.db_handler.execute(f.read())
+            for sql in f.read().split(';'):
+                Longan.db_handler.execute(sql)
