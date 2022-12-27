@@ -5,7 +5,7 @@ class DBHandler:
 
     def __init__(self, db_path, debug=False):
         self._debug = debug
-        self._connect = sqlite3.connect(db_path)
+        self._connect = sqlite3.connect(db_path, check_same_thread=False)
         self._cursor = self._connect.cursor()
 
     def execute(self, sql):
