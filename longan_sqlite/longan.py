@@ -17,11 +17,11 @@ class Longan:
     db_handler = None
 
     @staticmethod
-    def init(db_path, debug=False):
+    def init(db_path, debug=False, logger=None):
         abspath = os.path.abspath(db_path)
         if Longan.db_path != abspath:
             Longan.db_path = os.path.abspath(db_path)
-            Longan.db_handler = DBHandler(db_path, debug)
+            Longan.db_handler = DBHandler(db_path, debug, logger)
 
     def __init__(self, table_name=None):
         """
