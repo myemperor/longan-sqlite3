@@ -57,7 +57,7 @@ class FieldAttr:
 
 class SqlConfig:
     SELECT = 'SELECT * FROM {}'
-    INSERT = "INSERT OR IGNORE INTO {} ({}) VALUES({})"
+    INSERT = "INSERT INTO {} ({}) VALUES({})"
     UPDATE = "UPDATE {} SET {} WHERE {}"
     DELETE = "DELETE FROM {} WHERE {}"
     TABLE_INFO = "PRAGMA TABLE_INFO({})"
